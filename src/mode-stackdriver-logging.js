@@ -6,7 +6,7 @@ ace.define("ace/mode/stackdriver_highlight_rules", ["require", "exports", "modul
   var oop = require("../lib/oop");
   var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
-  var StackdriverHighlightRules = function () {
+  var StackdriverLoggingHighlightRules = function () {
     var keywords = (
       "AND|OR|NOT"
     );
@@ -59,9 +59,9 @@ ace.define("ace/mode/stackdriver_highlight_rules", ["require", "exports", "modul
     this.normalizeRules();
   };
 
-  oop.inherits(StackdriverHighlightRules, TextHighlightRules);
+  oop.inherits(StackdriverLoggingHighlightRules, TextHighlightRules);
 
-  exports.StackdriverHighlightRules = StackdriverHighlightRules;
+  exports.StackdriverLoggingHighlightRules = StackdriverLoggingHighlightRules;
 });
 
 ace.define("ace/mode/stackdriver_completions", ["require", "exports", "module", "ace/token_iterator", "ace/lib/lang"], function (require, exports, module) {
@@ -119,7 +119,7 @@ ace.define("ace/mode/stackdriver_completions", ["require", "exports", "module", 
     ].join("");
   }
 
-  var StackdriverCompletions = function () { };
+  var StackdriverLoggingCompletions = function () { };
 
   (function () {
     this.getCompletions = function (state, session, pos, prefix, callback) {
@@ -132,9 +132,9 @@ ace.define("ace/mode/stackdriver_completions", ["require", "exports", "module", 
       callback(null, completions);
     };
 
-  }).call(StackdriverCompletions.prototype);
+  }).call(StackdriverLoggingCompletions.prototype);
 
-  exports.StackdriverCompletions = StackdriverCompletions;
+  exports.StackdriverLoggingCompletions = StackdriverLoggingCompletions;
 });
 
 ace.define("ace/mode/behaviour/stackdriver", ["require", "exports", "module", "ace/lib/oop", "ace/mode/behaviour", "ace/mode/behaviour/cstyle", "ace/token_iterator"], function (require, exports, module) {
@@ -158,12 +158,12 @@ ace.define("ace/mode/behaviour/stackdriver", ["require", "exports", "module", "a
     };
   };
 
-  var StackdriverBehaviour = function () {
+  var StackdriverLoggingBehaviour = function () {
     this.inherit(CstyleBehaviour);
   }
-  oop.inherits(StackdriverBehaviour, CstyleBehaviour);
+  oop.inherits(StackdriverLoggingBehaviour, CstyleBehaviour);
 
-  exports.StackdriverBehaviour = StackdriverBehaviour;
+  exports.StackdriverLoggingBehaviour = StackdriverLoggingBehaviour;
 });
 
 ace.define("ace/mode/stackdriver", ["require", "exports", "module", "ace/lib/oop", "ace/mode/text", "ace/mode/stackdriver_highlight_rules"], function (require, exports, module) {
@@ -171,14 +171,14 @@ ace.define("ace/mode/stackdriver", ["require", "exports", "module", "ace/lib/oop
 
   var oop = require("../lib/oop");
   var TextMode = require("./text").Mode;
-  var StackdriverHighlightRules = require("./stackdriver_highlight_rules").StackdriverHighlightRules;
-  var StackdriverCompletions = require("./stackdriver_completions").StackdriverCompletions;
-  var StackdriverBehaviour = require("./behaviour/stackdriver").StackdriverBehaviour;
+  var StackdriverLoggingHighlightRules = require("./stackdriver_highlight_rules").StackdriverLoggingHighlightRules;
+  var StackdriverLoggingCompletions = require("./stackdriver_completions").StackdriverLoggingCompletions;
+  var StackdriverLoggingBehaviour = require("./behaviour/stackdriver").StackdriverLoggingBehaviour;
 
   var Mode = function () {
-    this.HighlightRules = StackdriverHighlightRules;
-    this.$behaviour = new StackdriverBehaviour();
-    this.$completer = new StackdriverCompletions();
+    this.HighlightRules = StackdriverLoggingHighlightRules;
+    this.$behaviour = new StackdriverLoggingBehaviour();
+    this.$completer = new StackdriverLoggingCompletions();
     // replace keyWordCompleter
     this.completer = this.$completer;
   };

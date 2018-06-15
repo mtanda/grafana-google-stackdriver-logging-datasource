@@ -16,7 +16,7 @@ System.config({
   }
 });
 
-export default class GoogleStackdriverDatasource {
+export default class GoogleStackdriverLoggingDatasource {
   type: string;
   name: string;
   id: string;
@@ -149,7 +149,7 @@ export default class GoogleStackdriverDatasource {
             }
             datapoints.push([value, Date.parse(point.interval.endTime).valueOf()]);
           }
-          // Stackdriver API returns series in reverse chronological order.
+          // StackdriverLogging API returns series in reverse chronological order.
           datapoints.reverse();
           return [{ target: metricLabel, datapoints: datapoints }];
         } else {

@@ -2,12 +2,12 @@
 
 import angular from 'angular';
 import _ from 'lodash';
-import GoogleStackdriverCompleter from './completer';
+import GoogleStackdriverLoggingCompleter from './completer';
 
-angular.module('grafana.directives').directive('googleStackdriverQueryParameter', () => {
+angular.module('grafana.directives').directive('googleStackdriverLoggingQueryParameter', () => {
   return {
     templateUrl: 'public/plugins/mtanda-google-stackdriver-datasource/partials/query.parameter.html',
-    controller: 'GoogleStackdriverQueryParameterCtrl',
+    controller: 'GoogleStackdriverLoggingQueryParameterCtrl',
     restrict: 'E',
     scope: {
       target: "=",
@@ -18,7 +18,7 @@ angular.module('grafana.directives').directive('googleStackdriverQueryParameter'
   };
 });
 
-angular.module('grafana.controllers').controller('GoogleStackdriverQueryParameterCtrl', ($scope, templateSrv, uiSegmentSrv, datasourceSrv, timeSrv, $q) => {
+angular.module('grafana.controllers').controller('GoogleStackdriverLoggingQueryParameterCtrl', ($scope, templateSrv, uiSegmentSrv, datasourceSrv, timeSrv, $q) => {
   $scope.init = function () {
     let target = $scope.target;
     target.projectId = target.projectId || '';
@@ -54,7 +54,7 @@ angular.module('grafana.controllers').controller('GoogleStackdriverQueryParamete
   };
 
   $scope.getCompleter = function (query) {
-    return new GoogleStackdriverCompleter(this.datasource, timeSrv, $scope.target);
+    return new GoogleStackdriverLoggingCompleter(this.datasource, timeSrv, $scope.target);
   };
 
   $scope.$on('typeahead-updated', () => {

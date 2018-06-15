@@ -1,5 +1,5 @@
 {
-  "name": "GoogleStackdriver",
+  "name": "GoogleStackdriverLogging",
   "id": "mtanda-google-stackdriver-datasource",
   "type": "datasource",
 
@@ -13,7 +13,7 @@
   "executable": "google-stackdriver-plugin",
 
   "info": {
-    "description": "Google Stackdriver datasource",
+    "description": "Google StackdriverLogging datasource",
     "author": {
       "name": "Mitsuhiro Tanda"
     },

@@ -1,9 +1,9 @@
 ///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
 
-import GoogleStackdriverDatasource from "./datasource";
+import GoogleStackdriverLoggingDatasource from "./datasource";
 import _ from 'lodash';
 
-export default class GoogleStackdriverCompleter {
+export default class GoogleStackdriverLoggingCompleter {
   datasource: any;
   target: any;
   filterQueryCache: any;
