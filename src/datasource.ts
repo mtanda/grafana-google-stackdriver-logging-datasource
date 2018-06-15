@@ -644,82 +644,6 @@ export default class GoogleStackdriverLoggingDatasource {
     });
   }
 
-  filterSeries(target, response) {
-    if (!_.has(target, 'seriesFilter') ||
-      target.seriesFilter.mode === 'NONE' ||
-      target.seriesFilter.type === 'NONE' ||
-      target.seriesFilter.param === '') {
-      return response;
-    }
-
-    let param = _.toNumber(target.seriesFilter.param);
-    if (_.isNaN(param)) return response;
-
-    response.timeSeries.forEach(series => {
-      series['filterValue'] = this.getSeriesFilterValue(target, series);
-    });
-
-    switch (target.seriesFilter.mode) {
-      case 'TOP':
-        response.timeSeries.sort(function (a, b) {
-          return b.filterValue - a.filterValue;
-        });
-        response.timeSeries = response.timeSeries.slice(0, param);
-        return response;
-      case 'BOTTOM':
-        response.timeSeries.sort(function (a, b) {
-          return a.filterValue - b.filterValue;
-        });
-        response.timeSeries = response.timeSeries.slice(0, param);
-        return response;
-      case 'BELOW':
-        response.timeSeries = response.timeSeries.filter(function (elem) {
-          return elem.filterValue < param;
-        });
-        return response;
-      case 'ABOVE':
-        response.timeSeries = response.timeSeries.filter(function (elem) {
-          return elem.filterValue > param;
-        });
-        return response;
-      default:
-        console.log(`Unknown series filter mode: ${target.seriesFilter.mode}`);
-        return response;
-    }
-  }
-
-  getSeriesFilterValue(target, series) {
-    // For empty timeseries return filter value that will push them out first.
-    if (series.points.length == 0) {
-      if (target.seriesFilter.mode === 'BOTTOM' ||
-        target.seriesFilter.mode === 'BELOW') {
-        return Number.MAX_VALUE;
-      } else {
-        return Number.MIN_VALUE;
-      }
-    }
-    let valueKey = series.valueType.toLowerCase() + 'Value';
-    switch (target.seriesFilter.type) {
-      case 'MAX':
-        return series.points.reduce(function (acc, elem) {
-          return Math.max(acc, elem.value[valueKey]);
-        }, Number.MIN_VALUE);
-      case 'MIN':
-        return series.points.reduce(function (acc, elem) {
-          return Math.min(acc, elem.value[valueKey]);
-        }, Number.MAX_VALUE);
-      case 'AVERAGE':
-        return series.points.reduce(function (acc, elem) {
-          return acc + elem.value[valueKey];
-        }, 0) / series.points.length;
-      case 'CURRENT':
-        return series.points[0].value[valueKey];
-      default:
-        console.log(`Unknown series filter type: ${target.seriesFilter.type}`);
-        return 0;
-    }
-  }
-
   getMetricLabel(alias, series) {
     let aliasData = {
       metric: series.metric,
@@ -753,22 +677,6 @@ export default class GoogleStackdriverLoggingDatasource {
       return `sub(${g1}, "${g2}", "${g3}")`;
     });
     return alias;
-  }
-
-  calcBucketBound(bucketOptions, n) {
-    let bucketBound = 0;
-    if (n === 0) {
-      return bucketBound;
-    }
-
-    if (bucketOptions.linearBuckets) {
-      bucketBound = bucketOptions.linearBuckets.offset + (bucketOptions.linearBuckets.width * (n - 1));
-    } else if (bucketOptions.exponentialBuckets) {
-      bucketBound = bucketOptions.exponentialBuckets.scale * (Math.pow(bucketOptions.exponentialBuckets.growthFactor, (n - 1)));
-    } else if (bucketOptions.explicitBuckets) {
-      bucketBound = bucketOptions.explicitBuckets.bounds[(n - 1)];
-    }
-    return bucketBound;
   }
 
   convertTime(date, roundUp) {
