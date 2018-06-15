@@ -60,19 +60,19 @@ export default class GoogleStackdriverLoggingDatasource {
           target.filter = this.templateSrv.replace(target.filter, options.scopedVars || {});
           return this.performTimeSeriesQuery(target, options).then(response => {
             appEvents.emit('ds-request-response', response);
-            response.timeSeries.forEach(series => {
+            response.entries.forEach(series => {
               series.target = target;
             });
             return response;
           });
         })).then((responses: any) => {
-          let timeSeries = _.flatten(responses.filter(response => {
-            return !!response.timeSeries;
+          let entries = _.flatten(responses.filter(response => {
+            return !!response.entries;
           }).map(response => {
-            return response.timeSeries;
+            return response.entries;
           }));
           if (options.targets[0].format === 'table') {
-            return this.transformMetricDataToTable(timeSeries);
+            return this.transformMetricDataToTable(entries);
           }
         }, err => {
           console.log(err);
@@ -314,15 +314,15 @@ export default class GoogleStackdriverLoggingDatasource {
       }
     })(params).then(response => {
       response = response.result;
-      if (!response.timeSeries) {
-        return { timeSeries: [] };
+      if (!response.entries) {
+        return { entries: [] };
       }
       if (!response.nextPageToken) {
         return response;
       }
       target.pageToken = response.nextPageToken;
       return this.performTimeSeriesQuery(target, options).then(nextResponse => {
-        response.timeSeries = response.timeSeries.concat(nextResponse.timeSeries);
+        response.entries = response.entries.concat(nextResponse.entries);
         return response;
       });
     }, err => {
