@@ -314,7 +314,7 @@ export default class GoogleStackdriverLoggingDatasource {
     }
     return ((params) => {
       if (this.access != 'proxy') {
-        return this.gapi.client.monitoring.projects.timeSeries.list(params);
+        return this.gapi.client.logging.entries.list(params);
       } else {
         return this.backendPluginRawRequest({
           url: '/api/tsdb/query',
