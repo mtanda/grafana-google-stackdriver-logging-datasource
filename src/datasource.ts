@@ -47,7 +47,7 @@ export default class GoogleStackdriverLoggingDatasource {
     this.scopes = [
       'https://www.googleapis.com/auth/logging.read'
     ].join(' ');
-    this.discoveryDocs = ["https://monitoring.googleapis.com/$discovery/rest?version=v3"];
+    this.discoveryDocs = ["https://logging.googleapis.com/$discovery/rest?version=v2"];
     this.initialized = false;
   }
 
