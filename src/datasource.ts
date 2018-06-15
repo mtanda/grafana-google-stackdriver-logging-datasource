@@ -281,24 +281,6 @@ export default class GoogleStackdriverLoggingDatasource {
     let params: any = {};
     params.name = this.templateSrv.replace('projects/' + (target.projectId || this.defaultProjectId), options.scopedVars || {});
     params.filter = this.templateSrv.replace(target.filter, options.scopedVars || {});
-    if (target.aggregation) {
-      for (let key of Object.keys(target.aggregation)) {
-        if (_.isArray(target.aggregation[key])) {
-          params['aggregation.' + key] = target.aggregation[key].map(aggregation => {
-            return this.templateSrv.replace(aggregation, options.scopedVars || {});
-          });
-        } else if (target.aggregation[key] !== '') {
-          params['aggregation.' + key] = this.templateSrv.replace(target.aggregation[key], options.scopedVars || {});
-        }
-      }
-      // auto period
-      if (params['aggregation.perSeriesAligner'] !== 'ALIGN_NONE' && !params['aggregation.alignmentPeriod']) {
-        params['aggregation.alignmentPeriod'] = Math.max((options.intervalMs / 1000), 60) + 's';
-      }
-    }
-    if (target.view) {
-      params.view = target.view;
-    }
     if (target.pageToken) {
       params.pageToken = target.pageToken;
     }
