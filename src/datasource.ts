@@ -279,7 +279,9 @@ export default class GoogleStackdriverLoggingDatasource {
 
     target = angular.copy(target);
     let params: any = {};
-    params.name = this.templateSrv.replace('projects/' + (target.projectId || this.defaultProjectId), options.scopedVars || {});
+    params.resourceNames = [
+      this.templateSrv.replace('projects/' + (target.projectId || this.defaultProjectId), options.scopedVars || {})
+    ];
     params.filter = this.templateSrv.replace(target.filter, options.scopedVars || {});
     if (target.pageToken) {
       params.pageToken = target.pageToken;
