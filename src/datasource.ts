@@ -69,7 +69,7 @@ export default class GoogleStackdriverLoggingDatasource {
             response.timeSeries.forEach(series => {
               series.target = target;
             });
-            return this.filterSeries(target, response);
+            return response;
           });
         })).then((responses: any) => {
           let timeSeries = _.flatten(responses.filter(response => {
@@ -79,8 +79,6 @@ export default class GoogleStackdriverLoggingDatasource {
           }));
           if (options.targets[0].format === 'table') {
             return this.transformMetricDataToTable(timeSeries);
-          } else {
-            return this.transformMetricData(timeSeries);
           }
         }, err => {
           console.log(err);
@@ -202,7 +200,7 @@ export default class GoogleStackdriverLoggingDatasource {
           filter: ''
         };
         //return this.performMetricDescriptorsQuery(params, {}).then(response => {
-          return { status: 'success', message: 'Data source is working', title: 'Success' };
+        return { status: 'success', message: 'Data source is working', title: 'Success' };
         //});
       } else {
         return { status: 'success', message: 'Data source is working', title: 'Success' };
