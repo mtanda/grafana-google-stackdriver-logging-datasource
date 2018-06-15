@@ -266,10 +266,10 @@ export default class GoogleStackdriverLoggingDatasource {
     });
   }
 
-  performTimeSeriesQuery(target, options) {
+  performTimeSeriesQuery(target, options, depth = 0) {
     if (this.token === 0) {
       return this.delay((retryCount) => {
-        return this.performTimeSeriesQuery(target, options);
+        return this.performTimeSeriesQuery(target, options, depth);
       }, 0, Math.ceil(this.provideTokenInterval));
     }
 
@@ -321,11 +321,11 @@ export default class GoogleStackdriverLoggingDatasource {
         return response;
       }
       // TODO: define reasonable limit
-      if (response.entries.length > 1000) {
+      if (depth > 3) {
         return response;
       }
       target.pageToken = response.nextPageToken;
-      return this.performTimeSeriesQuery(target, options).then(nextResponse => {
+      return this.performTimeSeriesQuery(target, options, depth + 1).then(nextResponse => {
         response.entries = response.entries.concat(nextResponse.entries);
         return response;
       });
@@ -335,7 +335,7 @@ export default class GoogleStackdriverLoggingDatasource {
         this.token = 0;
         return this.retryable(3, (retryCount) => {
           return this.delay((retryCount) => {
-            return this.performTimeSeriesQuery(target, options);
+            return this.performTimeSeriesQuery(target, options, depth);
           }, retryCount, this.calculateRetryWait(1000, retryCount));
         });
       }
