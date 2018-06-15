@@ -4,5 +4,5 @@ grunt:
 	grunt
 
 build:
-	GOOS=linux GOARCH=amd64 go build -o ./dist/google-stackdriver-plugin_linux_amd64 .
-	GOOS=darwin GOARCH=amd64 go build -o ./dist/google-stackdriver-plugin_darwin_amd64 .
+	GOOS=linux GOARCH=amd64 go build -o ./dist/google-stackdriver-logging-plugin_linux_amd64 .
+	GOOS=darwin GOARCH=amd64 go build -o ./dist/google-stackdriver-logging-plugin_darwin_amd64 .

@@ -15,7 +15,7 @@ import (
 	plugin "github.com/hashicorp/go-plugin"
 )
 
-type GoogleStackdriverDatasource struct {
+type GoogleStackdriverLoggingDatasource struct {
 	plugin.NetRPCUnsupportedPlugin
 }
 
@@ -40,7 +40,7 @@ func init() {
 	monitoringService = service
 }
 
-func (t *GoogleStackdriverDatasource) Query(ctx context.Context, tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+func (t *GoogleStackdriverLoggingDatasource) Query(ctx context.Context, tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	var response *datasource.DatasourceResponse
 
 	if initializeError != nil {
@@ -75,7 +75,7 @@ func (t *GoogleStackdriverDatasource) Query(ctx context.Context, tsdbReq *dataso
 	return response, nil
 }
 
-func (t *GoogleStackdriverDatasource) handleRawQuery(api string, tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+func (t *GoogleStackdriverLoggingDatasource) handleRawQuery(api string, tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	switch api {
 	case "monitoring.projects.timeSeries.list":
 		return t.handleTimeSeriesList(tsdbReq)
@@ -90,7 +90,7 @@ func (t *GoogleStackdriverDatasource) handleRawQuery(api string, tsdbReq *dataso
 	return nil, fmt.Errorf("not supported api")
 }
 
-func (t *GoogleStackdriverDatasource) parseInterval(tsdbReq *datasource.DatasourceRequest) ([]string, error) {
+func (t *GoogleStackdriverLoggingDatasource) parseInterval(tsdbReq *datasource.DatasourceRequest) ([]string, error) {
 	fromRaw, err := strconv.ParseInt(tsdbReq.TimeRange.FromRaw, 10, 64)
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ type TimeSeriesListRequest struct {
 	PageToken                     string
 }
 
-func (t *GoogleStackdriverDatasource) handleTimeSeriesList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+func (t *GoogleStackdriverLoggingDatasource) handleTimeSeriesList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	var req TimeSeriesListRequest
 	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
 		return nil, err
@@ -181,7 +181,7 @@ type MetricDescriptorsListRequest struct {
 	PageToken string
 }
 
-func (t *GoogleStackdriverDatasource) handleMetricDescriptorsList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+func (t *GoogleStackdriverLoggingDatasource) handleMetricDescriptorsList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	var req MetricDescriptorsListRequest
 	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
 		return nil, err
@@ -219,7 +219,7 @@ type GroupsListRequest struct {
 	PageToken string
 }
 
-func (t *GoogleStackdriverDatasource) handleGroupsList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+func (t *GoogleStackdriverLoggingDatasource) handleGroupsList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	var req GroupsListRequest
 	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
 		return nil, err
@@ -255,7 +255,7 @@ type GroupsMembersListRequest struct {
 	PageToken string
 }
 
-func (t *GoogleStackdriverDatasource) handleGroupsMembersList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+func (t *GoogleStackdriverLoggingDatasource) handleGroupsMembersList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	var req GroupsMembersListRequest
 	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
 		return nil, err
