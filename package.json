@@ -1,5 +1,5 @@
 {
-  "name": "google-stackdriver-datasource",
+  "name": "google-stackdriver-logging-datasource",
   "private": true,
   "version": "1.0.0",
   "description": "",
