@@ -63,13 +63,13 @@ export default class GoogleStackdriverLoggingDatasource {
             return response;
           });
         })).then((responses: any) => {
-          let entries = _.flatten(responses.filter(response => {
+          let allEntries = _.flatten(responses.filter(response => {
             return !!response.entries;
           }).map(response => {
             return response.entries;
           }));
           if (options.targets[0].format === 'table') {
-            return this.transformMetricDataToTable(entries);
+            return this.transformMetricDataToTable(allEntries);
           }
         }, err => {
           console.log(err);
@@ -127,16 +127,17 @@ export default class GoogleStackdriverLoggingDatasource {
     }
 
     // Collect all labels across all metrics
-    metricLabels['metric.type'] = 1;
+    // TODO: protoPayload
     metricLabels['resource.type'] = 1;
-    _.each(md, function (series) {
+    _.each(md, function (entries) {
       [
-        'metric.labels',
         'resource.labels',
-        'metadata.systemLabels',
-        'metadata.userLabels',
+        'httpRequest',
+        'labels',
+        'operation',
+        'sourceLocation',
       ].forEach(path => {
-        _.map(md, _.property(path)).forEach(labels => {
+        _.map(entries, _.property(path)).forEach(labels => {
           if (labels) {
             _.keys(labels).forEach(k => {
               let label = path + '.' + k;
@@ -156,21 +157,17 @@ export default class GoogleStackdriverLoggingDatasource {
       metricLabels[label] = labelIndex + 1;
       table.columns.push({ text: label });
     });
-    table.columns.push({ text: 'Value' });
 
     // Populate rows, set value to empty string when label not present.
-    _.each(md, function (series) {
-      if (series.points) {
-        for (i = 0; i < series.points.length; i++) {
-          var point = series.points[i];
-          var reordered: any = [Date.parse(point.interval.endTime).valueOf()];
-          for (j = 0; j < sortedLabels.length; j++) {
-            var label = sortedLabels[j];
-            reordered.push(_.get(series, label) || '');
-          }
-          reordered.push(point.value[_.keys(point.value)[0]]);
-          table.rows.push(reordered);
+    _.each(md, function (entries) {
+      for (i = 0; i < entries.length; i++) {
+        var reordered: any = [];
+        reordered.push(entries[i].Timestamp);
+        for (j = 0; j < sortedLabels.length; j++) {
+          var label = sortedLabels[j];
+          reordered.push(_.get(entries[i], label) || '');
         }
+        table.rows.push(reordered);
       }
     });
 
