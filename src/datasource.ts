@@ -320,6 +320,10 @@ export default class GoogleStackdriverLoggingDatasource {
       if (!response.nextPageToken) {
         return response;
       }
+      // TODO: define reasonable limit
+      if (response.entries.length > 1000) {
+        return response;
+      }
       target.pageToken = response.nextPageToken;
       return this.performTimeSeriesQuery(target, options).then(nextResponse => {
         response.entries = response.entries.concat(nextResponse.entries);
