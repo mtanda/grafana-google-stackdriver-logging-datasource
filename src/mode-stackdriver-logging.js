@@ -64,16 +64,16 @@ ace.define("ace/mode/stackdriver-logging_highlight_rules", ["require", "exports"
   exports.StackdriverLoggingHighlightRules = StackdriverLoggingHighlightRules;
 });
 
-ace.define("ace/mode/stackdriver_completions", ["require", "exports", "module", "ace/token_iterator", "ace/lib/lang"], function (require, exports, module) {
+ace.define("ace/mode/stackdriver-logging_completions", ["require", "exports", "module", "ace/token_iterator", "ace/lib/lang"], function (require, exports, module) {
   "use strict";
 
   var lang = require("../lib/lang");
 
-  var stackdriverKeyWords = [
+  var stackdriverLoggingKeyWords = [
     'starts_with', 'ends_with', 'has_substring', 'one_of', 'AND', 'OR', 'NOT'
   ];
 
-  var keyWordsCompletions = stackdriverKeyWords.map(function (word) {
+  var keyWordsCompletions = stackdriverLoggingKeyWords.map(function (word) {
     return {
       caption: word,
       value: word,
