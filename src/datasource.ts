@@ -60,9 +60,6 @@ export default class GoogleStackdriverLoggingDatasource {
           target.filter = this.templateSrv.replace(target.filter, options.scopedVars || {});
           return this.performTimeSeriesQuery(target, options).then(response => {
             appEvents.emit('ds-request-response', response);
-            response.entries.forEach(series => {
-              series.target = target;
-            });
             return response;
           });
         })).then((responses: any) => {
