@@ -346,9 +346,9 @@ export default class GoogleStackdriverLoggingDatasource {
           projectId: this.defaultProjectId,
           filter: ''
         };
-        return this.performMetricDescriptorsQuery(params, {}).then(response => {
+        //return this.performMetricDescriptorsQuery(params, {}).then(response => {
           return { status: 'success', message: 'Data source is working', title: 'Success' };
-        });
+        //});
       } else {
         return { status: 'success', message: 'Data source is working', title: 'Success' };
       }
