@@ -57,11 +57,7 @@ export default class GoogleStackdriverLoggingDatasource {
         .filter(target => !target.hide)
         .map(target => {
           target = angular.copy(target);
-          let filter = 'metric.type = "' + this.templateSrv.replace(target.metricType, options.scopedVars || {}) + '"';
-          if (target.filter) {
-            filter += ' AND ' + this.templateSrv.replace(target.filter, options.scopedVars || {});
-          }
-          target.filter = filter;
+          target.filter = this.templateSrv.replace(target.filter, options.scopedVars || {});
           return this.performTimeSeriesQuery(target, options).then(response => {
             appEvents.emit('ds-request-response', response);
             response.timeSeries.forEach(series => {
