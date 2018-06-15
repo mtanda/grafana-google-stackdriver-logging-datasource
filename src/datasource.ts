@@ -159,7 +159,7 @@ export default class GoogleStackdriverLoggingDatasource {
     });
 
     // Populate rows, set value to empty string when label not present.
-    _.each(md, function (entry) {
+    _.each(entries, function (entry) {
       var reordered: any = [];
       reordered.push(entry.Timestamp);
       for (j = 0; j < sortedLabels.length; j++) {
