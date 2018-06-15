@@ -63,13 +63,13 @@ export default class GoogleStackdriverLoggingDatasource {
             return response;
           });
         })).then((responses: any) => {
-          let allEntries = _.flatten(responses.filter(response => {
+          let entries = _.flatten(responses.filter(response => {
             return !!response.entries;
           }).map(response => {
             return response.entries;
           }));
           if (options.targets[0].format === 'table') {
-            return this.transformMetricDataToTable(allEntries);
+            return this.transformMetricDataToTable(entries);
           }
         }, err => {
           console.log(err);
@@ -117,19 +117,19 @@ export default class GoogleStackdriverLoggingDatasource {
       Math.floor(Math.random() * 1000);
   }
 
-  transformMetricDataToTable(md) {
+  transformMetricDataToTable(entries) {
     var table = new TableModel();
     var i, j;
     var metricLabels = {};
 
-    if (md.length === 0) {
+    if (entries.length === 0) {
       return table;
     }
 
     // Collect all labels across all metrics
     // TODO: protoPayload
     metricLabels['resource.type'] = 1;
-    _.each(md, function (entries) {
+    _.each(entries, (entry) => {
       [
         'resource.labels',
         'httpRequest',
@@ -137,7 +137,7 @@ export default class GoogleStackdriverLoggingDatasource {
         'operation',
         'sourceLocation',
       ].forEach(path => {
-        _.map(entries, _.property(path)).forEach(labels => {
+        _.map(entry, _.property(path)).forEach(labels => {
           if (labels) {
             _.keys(labels).forEach(k => {
               let label = path + '.' + k;
