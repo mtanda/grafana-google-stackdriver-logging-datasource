@@ -1,6 +1,6 @@
 // jshint ignore: start
 // jscs: disable
-ace.define("ace/mode/stackdriver_highlight_rules", ["require", "exports", "module", "ace/lib/oop", "ace/mode/text_highlight_rules"], function (require, exports, module) {
+ace.define("ace/mode/stackdriver-logging_highlight_rules", ["require", "exports", "module", "ace/lib/oop", "ace/mode/text_highlight_rules"], function (require, exports, module) {
   "use strict";
 
   var oop = require("../lib/oop");
@@ -137,7 +137,7 @@ ace.define("ace/mode/stackdriver_completions", ["require", "exports", "module", 
   exports.StackdriverLoggingCompletions = StackdriverLoggingCompletions;
 });
 
-ace.define("ace/mode/behaviour/stackdriver", ["require", "exports", "module", "ace/lib/oop", "ace/mode/behaviour", "ace/mode/behaviour/cstyle", "ace/token_iterator"], function (require, exports, module) {
+ace.define("ace/mode/behaviour/stackdriver-logging", ["require", "exports", "module", "ace/lib/oop", "ace/mode/behaviour", "ace/mode/behaviour/cstyle", "ace/token_iterator"], function (require, exports, module) {
   "use strict";
 
   var oop = require("../../lib/oop");
@@ -166,14 +166,14 @@ ace.define("ace/mode/behaviour/stackdriver", ["require", "exports", "module", "a
   exports.StackdriverLoggingBehaviour = StackdriverLoggingBehaviour;
 });
 
-ace.define("ace/mode/stackdriver", ["require", "exports", "module", "ace/lib/oop", "ace/mode/text", "ace/mode/stackdriver_highlight_rules"], function (require, exports, module) {
+ace.define("ace/mode/stackdriver-logging", ["require", "exports", "module", "ace/lib/oop", "ace/mode/text", "ace/mode/stackdriver-logging_highlight_rules"], function (require, exports, module) {
   "use strict";
 
   var oop = require("../lib/oop");
   var TextMode = require("./text").Mode;
-  var StackdriverLoggingHighlightRules = require("./stackdriver_highlight_rules").StackdriverLoggingHighlightRules;
-  var StackdriverLoggingCompletions = require("./stackdriver_completions").StackdriverLoggingCompletions;
-  var StackdriverLoggingBehaviour = require("./behaviour/stackdriver").StackdriverLoggingBehaviour;
+  var StackdriverLoggingHighlightRules = require("./stackdriver-logging_highlight_rules").StackdriverLoggingHighlightRules;
+  var StackdriverLoggingCompletions = require("./stackdriver-logging_completions").StackdriverLoggingCompletions;
+  var StackdriverLoggingBehaviour = require("./behaviour/stackdriver-logging").StackdriverLoggingBehaviour;
 
   var Mode = function () {
     this.HighlightRules = StackdriverLoggingHighlightRules;
@@ -186,7 +186,7 @@ ace.define("ace/mode/stackdriver", ["require", "exports", "module", "ace/lib/oop
 
   (function () {
 
-    this.$id = "ace/mode/stackdriver";
+    this.$id = "ace/mode/stackdriver-logging";
   }).call(Mode.prototype);
 
   exports.Mode = Mode;

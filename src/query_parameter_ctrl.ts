@@ -6,7 +6,7 @@ import GoogleStackdriverLoggingCompleter from './completer';
 
 angular.module('grafana.directives').directive('googleStackdriverLoggingQueryParameter', () => {
   return {
-    templateUrl: 'public/plugins/mtanda-google-stackdriver-datasource/partials/query.parameter.html',
+    templateUrl: 'public/plugins/mtanda-google-stackdriver-logging-datasource/partials/query.parameter.html',
     controller: 'GoogleStackdriverLoggingQueryParameterCtrl',
     restrict: 'E',
     scope: {
