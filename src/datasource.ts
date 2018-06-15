@@ -284,8 +284,7 @@ export default class GoogleStackdriverLoggingDatasource {
     if (target.pageToken) {
       params.pageToken = target.pageToken;
     }
-    params['interval.startTime'] = this.convertTime(options.range.from, false);
-    params['interval.endTime'] = this.convertTime(options.range.to, true);
+    params['orderBy'] = 'timestamp asc';
 
 
     this.token--;
