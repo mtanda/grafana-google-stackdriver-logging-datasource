@@ -1,15 +1,8 @@
 <div class="gf-form-inline">
 	<div class="gf-form gf-form--grow">
-		<label class="gf-form-label query-keyword width-7">Metric Type</label>
-		<input type="text" class="gf-form-input" ng-model="target.metricType" spellcheck='false' bs-typeahead="suggestMetricType" placeholder="metric type" data-min-length=0 data-items=100 give-focus="target.refId == 'A'" ng-model-onblur>
-	</div>
-</div>
-
-<div class="gf-form-inline">
-	<div class="gf-form gf-form--grow">
 		<label class="gf-form-label query-keyword width-7">Filter</label>
-		<code-editor content="target.filter" datasource="datasource" on-change="onChange()"
-			get-completer="getCompleter()" data-mode="stackdriver" code-editor-focus="isLastQuery">
+		<code-editor content="target.filter" datasource="datasource" on-change="onChange()" get-completer="getCompleter()" data-mode="stackdriver"
+		 code-editor-focus="isLastQuery">
 		</code-editor>
 		<info-popover mode="right-absolute">
 			Filter operators:
@@ -30,46 +23,6 @@
 				<li>metric.type = ends_with("name")</li>
 			</ul>
 		</info-popover>
-	</div>
-</div>
-
-<div class="gf-form-inline">
-	<div class="gf-form">
-		<label class="gf-form-label query-keyword width-7">Aggregation</label>
-
-		<metric-segment segment="crossSeriesReducerSegment" get-options="getCrossSeriesReducer()" on-change="reducerChanged()"></metric-segment>
-		<metric-segment segment="perSeriesAlignerSegment" get-options="getPerSeriesAligner()" on-change="alignerChanged()"></metric-segment>
-		<input type="text" class="gf-form-input input-small width-10" ng-model="target.aggregation.alignmentPeriod" spellcheck='false' placeholder="auto" ng-model-onblur ng-change="onChange()" />
-	</div>
-
-	<div class="gf-form gf-form--grow">
-		<div class="gf-form-label gf-form-label--grow"></div>
-		<info-popover mode="right-absolute">
-			Aggregate over time to reduce time resolution:
-			<ul ng-non-bindable>
-				<li>REDUCE_NONE ALIGN_MEAN 600s - downsample each timeseries by computing the 10-minute average</li>
-				<li>REDUCE_NONE ALIGN_MAX 3600s - downsample each timeseries by computing the hourly maximum</li>
-			</ul>
-			Aggregate across multiple time series (you can additionally use Group By feature if needed):
-			<ul ng-non-bindable>
-				<li>REDUCE_PERCENTILE_95 ALIGN_INTERPOLATE 60s - calculate the 95th percentile value among many timeseries</li>
-				<li>REDUCE_MEAN ALIGN_INTERPOLATE 60s - calculate the average value among many timeseries</li>
-			</ul>
-			Transform a counter to a metric representing rate (delta per second):
-			<ul ng-non-bindable>
-				<li>REDUCE_NONE ALIGN_RATE 60s - transform each timeseries by computing the rate of change (normalized to per second) over 60s intervals</li>
-			</ul>
-		</info-popover>
-	</div>
-</div>
-
-<div class="gf-form-inline">
-	<div class="gf-form">
-		<label class="gf-form-label query-keyword">Group By Fields</label>
-	</div>
-
-	<div class="gf-form" ng-repeat="segment in groupByFieldsSegments">
-		<metric-segment segment="segment" get-options="getGroupByFieldsSegments(segment, $index)" on-change="groupByFieldsSegmentChanged(segment, $index)"></metric-segment>
 	</div>
 </div>
 
@@ -100,35 +53,10 @@
 
 <div class="gf-form-inline">
 	<div class="gf-form">
-		<label class="gf-form-label query-keyword">Limit Timeseries</label>
-	</div>
-
-	<div class="gf-form">
-		<metric-segment segment="seriesFilterTypeSegment" get-options="getSeriesFilterTypes()" on-change="seriesFilterTypeChanged()"></metric-segment>
-	</div>
-	<div class="gf-form">
-		<metric-segment segment="seriesFilterModeSegment" get-options="getSeriesFilterModes()" on-change="seriesFilterModeChanged()"></metric-segment>
-	</div>
-	<input type="text" class="gf-form-input input-small width-10" ng-model="target.seriesFilter.param" spellcheck='false' placeholder="value" ng-model-onblur ng-change="onChange()" />
-
-	<div class="gf-form gf-form--grow">
-		<div class="gf-form-label gf-form-label--grow"></div>
-		<info-popover mode="right-absolute">
-			Show only subset of timeseries matching the query.<br/><br/>
-			Examples:
-			<ul ng-non-bindable>
-				<li>AVERAGE TOP 10 - limit to top 10 series ordered by average series value</li>
-				<li>MIN ABOVE 2300 - show only series with min datapoint above 2300</li>
-			</ul>
-		</info-popover>
-	</div>
-</div>
-
-<div class="gf-form-inline">
-	<div class="gf-form">
 		<label class="gf-form-label query-keyword width-7">
 			Project ID
 		</label>
-		<input type="text" class="gf-form-input input-small width-10" ng-model="target.projectId" spellcheck='false' placeholder="default" ng-model-onblur ng-change="onChange()" />
+		<input type="text" class="gf-form-input input-small width-10" ng-model="target.projectId" spellcheck='false' placeholder="default"
+		 ng-model-onblur ng-change="onChange()" />
 	</div>
 </div>
