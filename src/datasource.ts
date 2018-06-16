@@ -4,6 +4,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import angular from 'angular';
 import * as dateMath from 'app/core/utils/datemath';
+import flatten from 'app/core/utils/flatten';
 import appEvents from 'app/core/app_events';
 import TableModel from 'app/core/table_model';
 
@@ -128,31 +129,15 @@ export default class GoogleStackdriverLoggingDatasource {
 
     // Collect all labels across all metrics
     // TODO: protoPayload
-    metricLabels['resource.type'] = 1;
-    _.each(entries, (entry) => {
-      [
-        'resource.labels',
-        'httpRequest',
-        'labels',
-        'operation',
-        'sourceLocation',
-      ].forEach(path => {
-        _.map(entry, _.property(path)).forEach(labels => {
-          if (labels) {
-            _.keys(labels).forEach(k => {
-              let label = path + '.' + k;
-              if (!metricLabels.hasOwnProperty(label)) {
-                metricLabels[label] = 1;
-              }
-            });
-          }
-        });
-      });
+    _.each(entries.slice(0, 100), (entry) => {
+      let flattened = flatten(entry, null);
+      for (let propName in flattened) {
+        metricLabels[propName] = 1;
+      }
     });
 
     // Sort metric labels, create columns for them and record their index
-    var sortedLabels = _.keys(metricLabels).sort();
-    table.columns.push({ text: 'Time', type: 'time' });
+    let sortedLabels = _.keys(metricLabels).sort();
     _.each(sortedLabels, function (label, labelIndex) {
       metricLabels[label] = labelIndex + 1;
       table.columns.push({ text: label });
@@ -160,10 +145,9 @@ export default class GoogleStackdriverLoggingDatasource {
 
     // Populate rows, set value to empty string when label not present.
     _.each(entries, function (entry) {
-      var reordered: any = [];
-      reordered.push(entry.timestamp);
+      let reordered: any = [];
       for (j = 0; j < sortedLabels.length; j++) {
-        var label = sortedLabels[j];
+        let label = sortedLabels[j];
         reordered.push(_.get(entry, label) || '');
       }
       table.rows.push(reordered);
