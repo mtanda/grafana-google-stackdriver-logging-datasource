@@ -97,7 +97,7 @@ func (t *GoogleStackdriverLoggingDatasource) handleEntriesList(tsdbReq *datasour
 		return nil, err
 	}
 
-	entriesListCall := loggingService.Projects.Entries.List(req.ResourceNames)
+	entriesListCall := loggingService.Entries.List(req.ResourceNames)
 	if req.Filter != "" {
 		entriesListCall = entriesListCall.Filter(req.Filter)
 	}
