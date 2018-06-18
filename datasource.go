@@ -18,6 +18,7 @@ type GoogleStackdriverLoggingDatasource struct {
 }
 
 var loggingService *logging.Service
+var entriesService *logging.EntriesService
 var initializeError error
 
 func init() {
@@ -36,6 +37,7 @@ func init() {
 	}
 
 	loggingService = service
+	entriesService = logging.NewEntriesService(loggingService)
 }
 
 func (t *GoogleStackdriverLoggingDatasource) Query(ctx context.Context, tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
@@ -97,21 +99,22 @@ func (t *GoogleStackdriverLoggingDatasource) handleEntriesList(tsdbReq *datasour
 		return nil, err
 	}
 
-	entriesListCall := loggingService.Entries.List(req.ResourceNames)
+	var listReq logging.ListLogEntriesRequest
+	listReq.ResourceNames = req.ResourceNames
 	if req.Filter != "" {
-		entriesListCall = entriesListCall.Filter(req.Filter)
+		listReq.Filter = req.Filter
 	}
 	if req.OrderBy != "" {
-		entriesListCall = entriesListCall.OrderBy(req.OrderBy)
+		listReq.OrderBy = req.OrderBy
 	}
 	if req.PageSize != 0 {
-		entriesListCall = entriesListCall.PageSize(req.PageSize)
+		listReq.PageSize = req.PageSize
 	}
 	if req.PageToken != "" {
-		entriesListCall = entriesListCall.PageToken(req.PageToken)
+		listReq.PageToken = req.PageToken
 	}
 
-	result, err := entriesListCall.Do()
+	result, err := entriesService.List(&listReq).Do()
 	if err != nil {
 		return nil, err
 	}
