@@ -279,7 +279,7 @@ export default class GoogleStackdriverLoggingDatasource {
             queries: [
               _.extend({
                 queryType: 'raw',
-                api: 'monitoring.projects.timeSeries.list',
+                api: 'logging.entries.list',
                 refId: target.refId,
                 datasourceId: this.id
               }, params)
