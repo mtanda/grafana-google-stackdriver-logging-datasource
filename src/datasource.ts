@@ -157,20 +157,14 @@ export default class GoogleStackdriverLoggingDatasource {
 
   metricFindQuery(query) {
     return this.initialize().then(() => {
-      return Promise.reject(new Error('Invalid query, use one of: metrics(), label_values(), groups(), group_members()'));
+      return Promise.reject(new Error('Invalid query'));
     });
   }
 
   testDatasource() {
     return this.initialize().then(() => {
       if (this.access === 'proxy' && this.defaultProjectId) {
-        let params = {
-          projectId: this.defaultProjectId,
-          filter: ''
-        };
-        //return this.performMetricDescriptorsQuery(params, {}).then(response => {
         return { status: 'success', message: 'Data source is working', title: 'Success' };
-        //});
       } else {
         return { status: 'success', message: 'Data source is working', title: 'Success' };
       }
