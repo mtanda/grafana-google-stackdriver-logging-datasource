@@ -58,7 +58,12 @@ export default class GoogleStackdriverLoggingDatasource {
         .filter(target => !target.hide)
         .map(target => {
           target = angular.copy(target);
-          target.filter = this.templateSrv.replace(target.filter, options.scopedVars || {});
+          target.filter =
+            'timestamp >= "' + this.convertTime(options.range.from, false) + '"'
+            + ' AND ' +
+            'timestamp <= "' + this.convertTime(options.range.to, true) + '"'
+            + ' AND ' +
+            this.templateSrv.replace(target.filter, options.scopedVars || {});
           return this.performLogQuery(target, options).then(response => {
             appEvents.emit('ds-request-response', response);
             return response;
