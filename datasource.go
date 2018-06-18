@@ -79,6 +79,8 @@ func (t *GoogleStackdriverLoggingDatasource) handleRawQuery(api string, tsdbReq 
 	switch api {
 	case "logging.entries.list":
 		return t.handleEntriesList(tsdbReq)
+	case "logging.projects.logs.list":
+		return t.handleProjectsLogsList(tsdbReq)
 	}
 
 	return nil, fmt.Errorf("not supported api")
@@ -115,6 +117,41 @@ func (t *GoogleStackdriverLoggingDatasource) handleEntriesList(tsdbReq *datasour
 	}
 
 	result, err := entriesService.List(&listReq).Do()
+	if err != nil {
+		return nil, err
+	}
+
+	resultJson, err := json.Marshal(result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &datasource.DatasourceResponse{
+		Results: []*datasource.QueryResult{
+			&datasource.QueryResult{
+				MetaJson: string(resultJson),
+			},
+		},
+	}, nil
+}
+
+type ProjectsLogsListRequest struct {
+	Parent    string
+	PageToken string
+}
+
+func (t *GoogleStackdriverLoggingDatasource) handleProjectsLogsList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+	var req ProjectsLogsListRequest
+	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
+		return nil, err
+	}
+
+	projectsLogsService := logging.NewProjectsLogsService(loggingService)
+	projectsLogsListCall := projectsLogsService.List(req.Parent)
+	if req.PageToken != "" {
+		projectsLogsListCall = projectsLogsListCall.PageToken(req.PageToken)
+	}
+	result, err := projectsLogsListCall.Do()
 	if err != nil {
 		return nil, err
 	}
