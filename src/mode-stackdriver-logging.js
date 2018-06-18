@@ -16,7 +16,7 @@ ace.define("ace/mode/stackdriver-logging_highlight_rules", ["require", "exports"
     );
 
     var builtinFunctions = (
-      "starts_with|ends_with|has_substring|one_of"
+      "sample|ip_in_net"
     );
 
     var keywordMapper = this.createKeywordMapper({
@@ -70,7 +70,7 @@ ace.define("ace/mode/stackdriver-logging_completions", ["require", "exports", "m
   var lang = require("../lib/lang");
 
   var stackdriverLoggingKeyWords = [
-    'starts_with', 'ends_with', 'has_substring', 'one_of', 'AND', 'OR', 'NOT'
+    'sample', 'ip_in_net', 'AND', 'OR', 'NOT'
   ];
 
   var keyWordsCompletions = stackdriverLoggingKeyWords.map(function (word) {
