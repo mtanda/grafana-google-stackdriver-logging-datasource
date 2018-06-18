@@ -41,7 +41,7 @@ export default class GoogleStackdriverLoggingDatasource {
     this.access = instanceSettings.jsonData.access;
     this.clientId = instanceSettings.jsonData.clientId;
     this.defaultProjectId = instanceSettings.jsonData.defaultProjectId;
-    this.maxAvailableToken = ((instanceSettings.jsonData.quota && instanceSettings.jsonData.quota.requestsPerMinutePerUser) || 6000) / 60;
+    this.maxAvailableToken = ((instanceSettings.jsonData.quota && instanceSettings.jsonData.quota.requestsPerMinutePerUser) || 60) / 60;
     this.token = this.maxAvailableToken;
     this.provideTokenInterval = 1000 / this.maxAvailableToken;
     this.tokenTimer = null;
