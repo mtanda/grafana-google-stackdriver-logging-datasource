@@ -59,7 +59,7 @@ export default class GoogleStackdriverLoggingDatasource {
         .map(target => {
           target = angular.copy(target);
           target.filter = this.templateSrv.replace(target.filter, options.scopedVars || {});
-          return this.performTimeSeriesQuery(target, options).then(response => {
+          return this.performLogQuery(target, options).then(response => {
             appEvents.emit('ds-request-response', response);
             return response;
           });
@@ -241,10 +241,10 @@ export default class GoogleStackdriverLoggingDatasource {
     });
   }
 
-  performTimeSeriesQuery(target, options, depth = 0) {
+  performLogQuery(target, options, depth = 0) {
     if (this.token === 0) {
       return this.delay((retryCount) => {
-        return this.performTimeSeriesQuery(target, options, depth);
+        return this.performLogQuery(target, options, depth);
       }, 0, Math.ceil(this.provideTokenInterval));
     }
 
@@ -300,7 +300,7 @@ export default class GoogleStackdriverLoggingDatasource {
         return response;
       }
       target.pageToken = response.nextPageToken;
-      return this.performTimeSeriesQuery(target, options, depth + 1).then(nextResponse => {
+      return this.performLogQuery(target, options, depth + 1).then(nextResponse => {
         response.entries = response.entries.concat(nextResponse.entries);
         return response;
       });
@@ -310,7 +310,7 @@ export default class GoogleStackdriverLoggingDatasource {
         this.token = 0;
         return this.retryable(3, (retryCount) => {
           return this.delay((retryCount) => {
-            return this.performTimeSeriesQuery(target, options, depth);
+            return this.performLogQuery(target, options, depth);
           }, retryCount, this.calculateRetryWait(1000, retryCount));
         });
       }
