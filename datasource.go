@@ -3,12 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"time"
 
+	logging "godoc.org/google.golang.org/api/logging/v2"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
-	monitoring "google.golang.org/api/monitoring/v3"
 
 	"github.com/grafana/grafana/pkg/components/simplejson"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
@@ -19,25 +17,25 @@ type GoogleStackdriverLoggingDatasource struct {
 	plugin.NetRPCUnsupportedPlugin
 }
 
-var monitoringService *monitoring.Service
+var loggingService *logging.Service
 var initializeError error
 
 func init() {
 	ctx := context.Background()
 
-	googleClient, err := google.DefaultClient(ctx, monitoring.MonitoringReadScope)
+	googleClient, err := google.DefaultClient(ctx, logging.LoggingReadScope)
 	if err != nil {
 		initializeError = err
 		return
 	}
 
-	service, err := monitoring.New(googleClient)
+	service, err := logging.New(googleClient)
 	if err != nil {
 		initializeError = err
 		return
 	}
 
-	monitoringService = service
+	loggingService = service
 }
 
 func (t *GoogleStackdriverLoggingDatasource) Query(ctx context.Context, tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
@@ -77,205 +75,43 @@ func (t *GoogleStackdriverLoggingDatasource) Query(ctx context.Context, tsdbReq 
 
 func (t *GoogleStackdriverLoggingDatasource) handleRawQuery(api string, tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
 	switch api {
-	case "monitoring.projects.timeSeries.list":
-		return t.handleTimeSeriesList(tsdbReq)
-	case "monitoring.projects.metricDescriptors.list":
-		return t.handleMetricDescriptorsList(tsdbReq)
-	case "monitoring.projects.groups.list":
-		return t.handleGroupsList(tsdbReq)
-	case "monitoring.projects.groups.members.list":
-		return t.handleGroupsMembersList(tsdbReq)
+	case "logging.entries.list":
+		return t.handleEntriesList(tsdbReq)
 	}
 
 	return nil, fmt.Errorf("not supported api")
 }
 
-func (t *GoogleStackdriverLoggingDatasource) parseInterval(tsdbReq *datasource.DatasourceRequest) ([]string, error) {
-	fromRaw, err := strconv.ParseInt(tsdbReq.TimeRange.FromRaw, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	from := time.Unix(fromRaw/1000, fromRaw%1000*1000*1000)
-	toRaw, err := strconv.ParseInt(tsdbReq.TimeRange.ToRaw, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	to := time.Unix(toRaw/1000, toRaw%1000*1000*1000)
-
-	return []string{from.Format(time.RFC3339Nano), to.Format(time.RFC3339Nano)}, nil
+type EntriesListRequest struct {
+	RefId         string
+	ResourceNames []string
+	Filter        string
+	OrderBy       string
+	PageSize      int64
+	PageToken     string
 }
 
-type TimeSeriesListRequest struct {
-	RefId                         string
-	Name                          string
-	Filter                        string
-	AggregationAlignmentPeriod    string   `json:"aggregation.alignmentPeriod"`
-	AggregationPerSeriesAligner   string   `json:"aggregation.perSeriesAligner"`
-	AggregationCrossSeriesReducer string   `json:"aggregation.crossSeriesReducer"`
-	AggregationGroupByFields      []string `json:"aggregation.groupByFields"`
-	OrderBy                       string
-	View                          string
-	PageToken                     string
-}
-
-func (t *GoogleStackdriverLoggingDatasource) handleTimeSeriesList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
-	var req TimeSeriesListRequest
+func (t *GoogleStackdriverLoggingDatasource) handleEntriesList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
+	var req EntriesListRequest
 	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
 		return nil, err
 	}
 
-	interval, err := t.parseInterval(tsdbReq)
-	if err != nil {
-		return nil, err
-	}
-	timeSeriesListCall := monitoringService.Projects.TimeSeries.List(req.Name).
-		IntervalStartTime(interval[0]).
-		IntervalEndTime(interval[1])
+	entriesListCall := loggingService.Projects.Entries.List(req.ResourceNames)
 	if req.Filter != "" {
-		timeSeriesListCall = timeSeriesListCall.Filter(req.Filter)
-	}
-	if req.AggregationAlignmentPeriod != "" {
-		timeSeriesListCall = timeSeriesListCall.AggregationAlignmentPeriod(req.AggregationAlignmentPeriod)
-	}
-	if req.AggregationPerSeriesAligner != "" {
-		timeSeriesListCall = timeSeriesListCall.AggregationPerSeriesAligner(req.AggregationPerSeriesAligner)
-	}
-	if req.AggregationCrossSeriesReducer != "" {
-		timeSeriesListCall = timeSeriesListCall.AggregationCrossSeriesReducer(req.AggregationCrossSeriesReducer)
-	}
-	if len(req.AggregationGroupByFields) > 0 {
-		timeSeriesListCall = timeSeriesListCall.AggregationGroupByFields(req.AggregationGroupByFields...)
+		entriesListCall = entriesListCall.Filter(req.Filter)
 	}
 	if req.OrderBy != "" {
-		timeSeriesListCall = timeSeriesListCall.OrderBy(req.OrderBy)
+		entriesListCall = entriesListCall.OrderBy(req.OrderBy)
 	}
-	if req.View != "" {
-		timeSeriesListCall = timeSeriesListCall.View(req.View)
-	}
-	if req.PageToken != "" {
-		timeSeriesListCall = timeSeriesListCall.PageToken(req.PageToken)
-	}
-
-	result, err := timeSeriesListCall.Do()
-	if err != nil {
-		return nil, err
-	}
-
-	resultJson, err := json.Marshal(result)
-	if err != nil {
-		return nil, err
-	}
-
-	return &datasource.DatasourceResponse{
-		Results: []*datasource.QueryResult{
-			&datasource.QueryResult{
-				MetaJson: string(resultJson),
-			},
-		},
-	}, nil
-}
-
-type MetricDescriptorsListRequest struct {
-	Name      string
-	Filter    string
-	PageToken string
-}
-
-func (t *GoogleStackdriverLoggingDatasource) handleMetricDescriptorsList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
-	var req MetricDescriptorsListRequest
-	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
-		return nil, err
-	}
-
-	metricDescriptorsListCall := monitoringService.Projects.MetricDescriptors.List(req.Name)
-	if req.Filter != "" {
-		metricDescriptorsListCall = metricDescriptorsListCall.Filter(req.Filter)
+	if req.PageSize != 0 {
+		entriesListCall = entriesListCall.PageSize(req.PageSize)
 	}
 	if req.PageToken != "" {
-		metricDescriptorsListCall = metricDescriptorsListCall.PageToken(req.PageToken)
+		entriesListCall = entriesListCall.PageToken(req.PageToken)
 	}
 
-	result, err := metricDescriptorsListCall.Do()
-	if err != nil {
-		return nil, err
-	}
-
-	resultJson, err := json.Marshal(result)
-	if err != nil {
-		return nil, err
-	}
-
-	return &datasource.DatasourceResponse{
-		Results: []*datasource.QueryResult{
-			&datasource.QueryResult{
-				MetaJson: string(resultJson),
-			},
-		},
-	}, nil
-}
-
-type GroupsListRequest struct {
-	Name      string
-	PageToken string
-}
-
-func (t *GoogleStackdriverLoggingDatasource) handleGroupsList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
-	var req GroupsListRequest
-	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
-		return nil, err
-	}
-
-	groupsListCall := monitoringService.Projects.Groups.List(req.Name)
-	if req.PageToken != "" {
-		groupsListCall = groupsListCall.PageToken(req.PageToken)
-	}
-
-	result, err := groupsListCall.Do()
-	if err != nil {
-		return nil, err
-	}
-
-	resultJson, err := json.Marshal(result)
-	if err != nil {
-		return nil, err
-	}
-
-	return &datasource.DatasourceResponse{
-		Results: []*datasource.QueryResult{
-			&datasource.QueryResult{
-				MetaJson: string(resultJson),
-			},
-		},
-	}, nil
-}
-
-type GroupsMembersListRequest struct {
-	Name      string
-	Filter    string
-	PageToken string
-}
-
-func (t *GoogleStackdriverLoggingDatasource) handleGroupsMembersList(tsdbReq *datasource.DatasourceRequest) (*datasource.DatasourceResponse, error) {
-	var req GroupsMembersListRequest
-	if err := json.Unmarshal([]byte(tsdbReq.Queries[0].ModelJson), &req); err != nil {
-		return nil, err
-	}
-
-	interval, err := t.parseInterval(tsdbReq)
-	if err != nil {
-		return nil, err
-	}
-	groupsMembersListCall := monitoringService.Projects.Groups.Members.List(req.Name).
-		IntervalStartTime(interval[0]).
-		IntervalEndTime(interval[1])
-	if req.Filter != "" {
-		groupsMembersListCall = groupsMembersListCall.Filter(req.Filter)
-	}
-	if req.PageToken != "" {
-		groupsMembersListCall = groupsMembersListCall.PageToken(req.PageToken)
-	}
-
-	result, err := groupsMembersListCall.Do()
+	result, err := entriesListCall.Do()
 	if err != nil {
 		return nil, err
 	}

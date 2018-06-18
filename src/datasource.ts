@@ -128,7 +128,6 @@ export default class GoogleStackdriverLoggingDatasource {
     }
 
     // Collect all labels across all metrics
-    // TODO: protoPayload
     _.each(entries.slice(0, 100), (entry) => {
       let flattened = flatten(entry, null);
       for (let propName in flattened) {
