@@ -153,7 +153,26 @@ System.register(['lodash', 'angular', 'app/core/utils/datemath', 'app/core/utils
                     return { data: [table] };
                 };
                 GoogleStackdriverLoggingDatasource.prototype.metricFindQuery = function (query) {
+                    var _this = this;
                     return this.initialize().then(function () {
+                        var logsQuery = query.match(/^logs\(([^,]+)?\)/);
+                        if (logsQuery) {
+                            var projectId = logsQuery[1] || _this.defaultProjectId;
+                            var params = {
+                                parent: _this.templateSrv.replace(projectId)
+                            };
+                            return _this.performLogsQuery(params, {}).then(function (response) {
+                                return _this.$q.when(response.logNames.map(function (d) {
+                                    return {
+                                        text: d
+                                    };
+                                }));
+                            }, function (err) {
+                                console.log(err);
+                                err = JSON.parse(err.body);
+                                throw err.error;
+                            });
+                        }
                         return Promise.reject(new Error('Invalid query'));
                     });
                 };
@@ -304,6 +323,49 @@ System.register(['lodash', 'angular', 'app/core/utils/datemath', 'app/core/utils
                             });
                         }
                         throw err;
+                    });
+                };
+                GoogleStackdriverLoggingDatasource.prototype.performLogsQuery = function (target, options) {
+                    var _this = this;
+                    target = angular_1.default.copy(target);
+                    var params = {};
+                    params.parent = this.templateSrv.replace('projects/' + (target.projectId || this.defaultProjectId), options.scopedVars || {});
+                    if (target.pageToken) {
+                        params.pageToken = target.pageToken;
+                    }
+                    return (function (params) {
+                        if (_this.access != 'proxy') {
+                            return _this.gapi.client.logging.projects.logs.list(params);
+                        }
+                        else {
+                            return _this.backendPluginRawRequest({
+                                url: '/api/tsdb/query',
+                                method: 'POST',
+                                data: {
+                                    queries: [
+                                        lodash_1.default.extend({
+                                            queryType: 'raw',
+                                            api: 'logging.projects.logs.list',
+                                            refId: '',
+                                            datasourceId: _this.id
+                                        }, params)
+                                    ],
+                                }
+                            });
+                        }
+                    })(params).then(function (response) {
+                        response = response.result;
+                        if (!response.logNames) {
+                            return { logNames: [] };
+                        }
+                        if (!response.nextPageToken) {
+                            return response;
+                        }
+                        target.pageToken = response.nextPageToken;
+                        return _this.performLogsQuery(target, options).then(function (nextResponse) {
+                            response = response.logNames.concat(nextResponse.logNames);
+                            return response;
+                        });
                     });
                 };
                 GoogleStackdriverLoggingDatasource.prototype.getMetricLabel = function (alias, series) {

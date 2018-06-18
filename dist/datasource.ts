@@ -162,6 +162,25 @@ export default class GoogleStackdriverLoggingDatasource {
 
   metricFindQuery(query) {
     return this.initialize().then(() => {
+      let logsQuery = query.match(/^logs\(([^,]+)?\)/);
+      if (logsQuery) {
+        let projectId = logsQuery[1] || this.defaultProjectId;
+        let params = {
+          parent: this.templateSrv.replace(projectId)
+        };
+        return this.performLogsQuery(params, {}).then(response => {
+          return this.$q.when(response.logNames.map(d => {
+            return {
+              text: d
+            };
+          }));
+        }, err => {
+          console.log(err);
+          err = JSON.parse(err.body);
+          throw err.error;
+        });
+      }
+
       return Promise.reject(new Error('Invalid query'));
     });
   }
@@ -314,6 +333,48 @@ export default class GoogleStackdriverLoggingDatasource {
         });
       }
       throw err;
+    });
+  }
+
+  performLogsQuery(target, options) {
+    target = angular.copy(target);
+    let params: any = {};
+    params.parent = this.templateSrv.replace('projects/' + (target.projectId || this.defaultProjectId), options.scopedVars || {});
+    if (target.pageToken) {
+      params.pageToken = target.pageToken;
+    }
+    return ((params) => {
+      if (this.access != 'proxy') {
+        return this.gapi.client.logging.projects.logs.list(params);
+      } else {
+        return this.backendPluginRawRequest({
+          url: '/api/tsdb/query',
+          method: 'POST',
+          data: {
+            queries: [
+              _.extend({
+                queryType: 'raw',
+                api: 'logging.projects.logs.list',
+                refId: '',
+                datasourceId: this.id
+              }, params)
+            ],
+          }
+        });
+      }
+    })(params).then(response => {
+      response = response.result;
+      if (!response.logNames) {
+        return { logNames: [] };
+      }
+      if (!response.nextPageToken) {
+        return response;
+      }
+      target.pageToken = response.nextPageToken;
+      return this.performLogsQuery(target, options).then(nextResponse => {
+        response = response.logNames.concat(nextResponse.logNames);
+        return response;
+      });
     });
   }
 

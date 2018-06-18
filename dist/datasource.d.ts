@@ -32,6 +32,7 @@ export default class GoogleStackdriverLoggingDatasource {
     initialize(): any;
     backendPluginRawRequest(params: any): any;
     performLogQuery(target: any, options: any, depth?: number): any;
+    performLogsQuery(target: any, options: any): any;
     getMetricLabel(alias: any, series: any): any;
     convertTime(date: any, roundUp: any): any;
 }
