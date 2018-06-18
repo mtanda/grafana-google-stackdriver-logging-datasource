@@ -61,7 +61,12 @@ System.register(['lodash', 'angular', 'app/core/utils/datemath', 'app/core/utils
                             .filter(function (target) { return !target.hide; })
                             .map(function (target) {
                             target = angular_1.default.copy(target);
-                            target.filter = _this.templateSrv.replace(target.filter, options.scopedVars || {});
+                            target.filter =
+                                'timestamp >= "' + _this.convertTime(options.range.from, false) + '"'
+                                    + ' AND ' +
+                                    'timestamp <= "' + _this.convertTime(options.range.to, true) + '"'
+                                    + ' AND ' +
+                                    _this.templateSrv.replace(target.filter, options.scopedVars || {});
                             return _this.performLogQuery(target, options).then(function (response) {
                                 app_events_1.default.emit('ds-request-response', response);
                                 return response;
