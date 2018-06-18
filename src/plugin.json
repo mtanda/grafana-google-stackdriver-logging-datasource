@@ -1,0 +1,35 @@
+{
+  "name": "GoogleStackdriverLogging",
+  "id": "mtanda-google-stackdriver-logging-datasource",
+  "type": "datasource",
+
+  "partials": {
+    "config": "public/app/plugins/datasource/mtanda-google-stackdriver-logging-datasource/partials/config.html"
+  },
+
+  "metrics": true,
+  "annotations": false,
+  "backend": true,
+  "executable": "google-stackdriver-logging-plugin",
+
+  "info": {
+    "description": "Google StackdriverLogging datasource",
+    "author": {
+      "name": "Mitsuhiro Tanda"
+    },
+    "links": [
+      {"name": "GitHub", "url": "https://github.com/mtanda/grafana-google-stackdriver-logging-datasource"},
+      {"name": "MIT License", "url": "https://github.com/mtanda/grafana-google-stackdriver-logging-datasource/blob/master/LICENSE"}
+    ],
+    "screenshots": [
+      {"name": "Query Editor", "path": "images/query_editor.png"}
+    ],
+    "version": "1.0.0",
+    "updated": "2017-08-04"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "4.6.x",
+    "plugins": [ ]
+  }
+}

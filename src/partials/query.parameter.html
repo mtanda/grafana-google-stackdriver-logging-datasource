@@ -1,0 +1,25 @@
+<div class="gf-form-inline">
+	<div class="gf-form gf-form--grow">
+		<label class="gf-form-label query-keyword width-7">Filter</label>
+		<code-editor content="target.filter" datasource="datasource" on-change="onChange()" get-completer="getCompleter()" data-mode="stackdriver-logging"
+		 code-editor-focus="isLastQuery">
+		</code-editor>
+	</div>
+</div>
+
+<div class="gf-form-inline">
+	<div class="gf-form gf-form--grow">
+		<label class="gf-form-label query-keyword width-7">Alias</label>
+		<input type="text" class="gf-form-input" ng-model="target.alias" spellcheck='false' ng-model-onblur ng-change="onChange()">
+	</div>
+</div>
+
+<div class="gf-form-inline">
+	<div class="gf-form">
+		<label class="gf-form-label query-keyword width-7">
+			Project ID
+		</label>
+		<input type="text" class="gf-form-input input-small width-10" ng-model="target.projectId" spellcheck='false' placeholder="default"
+		 ng-model-onblur ng-change="onChange()" />
+	</div>
+</div>
