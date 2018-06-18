@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	logging "godoc.org/google.golang.org/api/logging/v2"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
+	logging "google.golang.org/api/logging/v2"
 
 	"github.com/grafana/grafana/pkg/components/simplejson"
 	"github.com/grafana/grafana_plugin_model/go/datasource"
