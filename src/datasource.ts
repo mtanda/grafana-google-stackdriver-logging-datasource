@@ -70,7 +70,7 @@ export default class GoogleStackdriverLoggingDatasource {
             return response.entries;
           }));
           if (options.targets[0].format === 'table') {
-            return this.transformMetricDataToTable(entries);
+            return this.transformEntriesToTable(entries);
           }
         }, err => {
           console.log(err);
@@ -118,7 +118,7 @@ export default class GoogleStackdriverLoggingDatasource {
       Math.floor(Math.random() * 1000);
   }
 
-  transformMetricDataToTable(entries) {
+  transformEntriesToTable(entries) {
     var table = new TableModel();
     var i, j;
     var metricLabels = {};
