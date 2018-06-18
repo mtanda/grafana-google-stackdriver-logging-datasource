@@ -4,8 +4,8 @@
 [[projects]]
   name = "cloud.google.com/go"
   packages = ["compute/metadata"]
-  revision = "056a55f54a6cc77b440b31a56a5e7c3982d32811"
-  version = "v0.22.0"
+  revision = "0fd7230b2a7505833d5f69b75cbd6c9582401479"
+  version = "v0.23.0"
 
 [[projects]]
   branch = "master"
@@ -17,7 +17,7 @@
     "ptypes/duration",
     "ptypes/timestamp"
   ]
-  revision = "668a607657a5d387d6333648a2d9c749761fdc69"
+  revision = "9f81198da99b79e14d70ca2c3cc1bbe44c6e69b6"
 
 [[projects]]
   name = "github.com/grafana/grafana"
@@ -26,7 +26,7 @@
   version = "v5.1.3"
 
 [[projects]]
-  branch = "renderer"
+  branch = "master"
   name = "github.com/grafana/grafana_plugin_model"
   packages = ["go/datasource"]
   revision = "84176c64269d8060f99e750ee8aba6f062753336"
@@ -46,7 +46,7 @@
   branch = "master"
   name = "github.com/hashicorp/yamux"
   packages = ["."]
-  revision = "2658be15c5f05e76244154714161f17e3e77de2e"
+  revision = "3520598351bb3500a49ae9563f5539666ae0a27c"
 
 [[projects]]
   branch = "master"
@@ -73,7 +73,7 @@
     "internal/timeseries",
     "trace"
   ]
-  revision = "2491c5de3490fced2f6cff376127c667efeed857"
+  revision = "db08ff08e8622530d9ed3a0e8ac279f6d4c02196"
 
 [[projects]]
   branch = "master"
@@ -85,7 +85,7 @@
     "jws",
     "jwt"
   ]
-  revision = "cdc340f7c179dbbfa4afd43b7614e8fcadde4269"
+  revision = "1e0a3fa8ba9a5c9eb35c271780101fdaf1b205d7"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -115,9 +115,9 @@
     "gensupport",
     "googleapi",
     "googleapi/internal/uritemplates",
-    "monitoring/v3"
+    "logging/v2"
   ]
-  revision = "aedc137bffcaca05f836e35c6d182fcb7a68b1c0"
+  revision = "2eea9ba0a3d94f6ab46508083e299a00bbbc65f6"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -133,14 +133,14 @@
     "internal/urlfetch",
     "urlfetch"
   ]
-  revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
-  version = "v1.0.0"
+  revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
-  revision = "7bb2a897381c9c5ab2aeb8614f758d7766af68ff"
+  revision = "32ee49c4dd805befd833990acba36cb75042378c"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -172,12 +172,12 @@
     "tap",
     "transport"
   ]
-  revision = "41344da2231b913fa3d983840a57a6b1b7b631a1"
-  version = "v1.12.0"
+  revision = "7a6a684ca69eb4cae85ad0a484f2e531598c047b"
+  version = "v1.12.2"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a3615718c955992d8e9f177efe7bb1ac50a8bca5edef8e9921ce23642020a32f"
+  inputs-digest = "8636c664bf6b771e44ef7da87798c75365609cbbbc00af1cf89193c5598ef863"
   solver-name = "gps-cdcl"
   solver-version = 1
