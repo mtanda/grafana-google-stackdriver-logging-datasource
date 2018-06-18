@@ -4,25 +4,6 @@
 		<code-editor content="target.filter" datasource="datasource" on-change="onChange()" get-completer="getCompleter()" data-mode="stackdriver-logging"
 		 code-editor-focus="isLastQuery">
 		</code-editor>
-		<info-popover mode="right-absolute">
-			Filter operators:
-			<ul ng-non-bindable>
-				<li> ":" substring match (case-sensitive)</li>
-				<li> "=" equality (case-sensitive)</li>
-			</ul>
-			Filter string functions:
-			<ul ng-non-bindable>
-				<li>starts_with()</li>
-				<li>ends_with()</li>
-				<li>has_substring()</li>
-				<li>one_of()</li>
-			</ul>
-			Examples:
-			<ul ng-non-bindable>
-				<li>metric.type : "compute"</li>
-				<li>metric.type = ends_with("name")</li>
-			</ul>
-		</info-popover>
 	</div>
 </div>
 
@@ -30,24 +11,6 @@
 	<div class="gf-form gf-form--grow">
 		<label class="gf-form-label query-keyword width-7">Alias</label>
 		<input type="text" class="gf-form-input" ng-model="target.alias" spellcheck='false' ng-model-onblur ng-change="onChange()">
-		<info-popover mode="right-absolute">
-			Alias replacement variables:
-			<ul ng-non-bindable>
-				<li>{{metric.key1.key2}}</li>
-				<li>{{resource.key1.key2}}</li>
-			</ul>
-			Alias substitute function:
-			<ul ng-non-bindable>
-				<li>sub(metric.key1.key2, "regex", "newval")</li>
-				<li>sub(resource.key1, "(reg)(ex)", "$1$2")</li>
-			</ul>
-			Examples:
-			<ul ng-non-bindable>
-				<li>Server {{metric.labels.instance_name}}</li>
-				<li>{{resource.type}} - {{metric.type}}</li>
-				<li>sub(metric.type, ".*cpu/(.*)", "$1")</li>
-			</ul>
-		</info-popover>
 	</div>
 </div>
 
