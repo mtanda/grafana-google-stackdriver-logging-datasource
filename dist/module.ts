@@ -1,5 +1,6 @@
 import GoogleStackdriverLoggingDatasource from './datasource';
-import {GoogleStackdriverLoggingQueryCtrl} from './query_ctrl';
+import { GoogleStackdriverLoggingQueryCtrl } from './query_ctrl';
+import { GoogleStackdriverLoggingAnnotationsQueryCtrl } from './annotations_query_ctrl';
 
 class GoogleStackdriverLoggingConfigCtrl {
   static templateUrl = 'partials/config.html';
@@ -8,5 +9,6 @@ class GoogleStackdriverLoggingConfigCtrl {
 export {
   GoogleStackdriverLoggingDatasource as Datasource,
   GoogleStackdriverLoggingConfigCtrl as ConfigCtrl,
-  GoogleStackdriverLoggingQueryCtrl as QueryCtrl
+  GoogleStackdriverLoggingQueryCtrl as QueryCtrl,
+  GoogleStackdriverLoggingAnnotationsQueryCtrl as AnnotationsQueryCtrl
 };

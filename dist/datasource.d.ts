@@ -27,6 +27,7 @@ export default class GoogleStackdriverLoggingDatasource {
     calculateRetryWait(initialWait: any, retryCount: any): number;
     transformEntriesToTable(entries: any): any;
     metricFindQuery(query: any): any;
+    annotationQuery(options: any): any;
     testDatasource(): any;
     load(): any;
     initialize(): any;

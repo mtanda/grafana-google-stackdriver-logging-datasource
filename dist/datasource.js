@@ -65,7 +65,7 @@ System.register(['lodash', 'angular', 'app/core/utils/datemath', 'app/core/utils
                                 'timestamp >= "' + _this.convertTime(options.range.from, false) + '"'
                                     + ' AND ' +
                                     'timestamp <= "' + _this.convertTime(options.range.to, true) + '"'
-                                    + ' AND ' +
+                                    + (target.filter ? ' AND ' : '') +
                                     _this.templateSrv.replace(target.filter, options.scopedVars || {});
                             return _this.performLogQuery(target, options).then(function (response) {
                                 app_events_1.default.emit('ds-request-response', response);
@@ -174,6 +174,44 @@ System.register(['lodash', 'angular', 'app/core/utils/datemath', 'app/core/utils
                             });
                         }
                         return Promise.reject(new Error('Invalid query'));
+                    });
+                };
+                GoogleStackdriverLoggingDatasource.prototype.annotationQuery = function (options) {
+                    var _this = this;
+                    var annotation = options.annotation;
+                    var filter = annotation.filter || '';
+                    var tagKeys = annotation.tagKeys || '';
+                    tagKeys = tagKeys.split(',');
+                    var titleFormat = annotation.titleFormat || '';
+                    var textFormat = annotation.textFormat || '';
+                    var range = this.timeSrv.timeRange();
+                    var target = {
+                        filter: 'timestamp >= "' + this.convertTime(range.from, false) + '"'
+                            + ' AND ' +
+                            'timestamp <= "' + this.convertTime(range.to, true) + '"'
+                            + (filter ? ' AND ' : '') +
+                            this.templateSrv.replace(filter, {})
+                    };
+                    if (annotation.projectId) {
+                        target.projectId = annotation.projectId;
+                    }
+                    return this.initialize().then(function () {
+                        return _this.performLogQuery(target, options).then(function (response) {
+                            var eventList = response.entries.map(function (event) {
+                                var tags = lodash_1.default.chain(event)
+                                    .filter(function (v, k) {
+                                    return lodash_1.default.includes(tagKeys, k);
+                                }).value();
+                                return {
+                                    annotation: annotation,
+                                    time: Date.parse(event.timestamp),
+                                    title: _this.getMetricLabel(titleFormat, event),
+                                    tags: tags,
+                                    text: _this.getMetricLabel(textFormat, event)
+                                };
+                            });
+                            return eventList;
+                        });
                     });
                 };
                 GoogleStackdriverLoggingDatasource.prototype.testDatasource = function () {
