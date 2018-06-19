@@ -185,6 +185,47 @@ export default class GoogleStackdriverLoggingDatasource {
     });
   }
 
+  annotationQuery(options) {
+    let annotation = options.annotation;
+    let filter = annotation.filter || '';
+    let tagKeys = annotation.tagKeys || '';
+    tagKeys = tagKeys.split(',');
+    let titleFormat = annotation.titleFormat || '';
+    let textFormat = annotation.textFormat || '';
+
+    let range = this.timeSrv.timeRange();
+    let target: any = {
+      filter: 'timestamp >= "' + this.convertTime(range.from, false) + '"'
+        + ' AND ' +
+        'timestamp <= "' + this.convertTime(range.to, true) + '"'
+        + (filter ? ' AND ' : '') +
+        this.templateSrv.replace(filter, {})
+    };
+    if (annotation.projectId) {
+      target.projectId = annotation.projectId;
+    }
+    return this.initialize().then(() => {
+      return this.performLogQuery(target, options).then(response => {
+        let eventList = response.entries.map((event) => {
+          let tags = _.chain(event)
+            .filter((v, k) => {
+              return _.includes(tagKeys, k);
+            }).value();
+
+          return {
+            annotation: annotation,
+            time: Date.parse(event.timestamp),
+            title: this.getMetricLabel(titleFormat, event),
+            tags: tags,
+            text: this.getMetricLabel(textFormat, event)
+          };
+        });
+
+        return eventList;
+      });
+    });
+  }
+
   testDatasource() {
     return this.initialize().then(() => {
       if (this.access === 'proxy' && this.defaultProjectId) {
