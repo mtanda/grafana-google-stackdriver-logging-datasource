@@ -62,7 +62,7 @@ export default class GoogleStackdriverLoggingDatasource {
             'timestamp >= "' + this.convertTime(options.range.from, false) + '"'
             + ' AND ' +
             'timestamp <= "' + this.convertTime(options.range.to, true) + '"'
-            + ' AND ' +
+            + (target.filter ? ' AND ' : '') +
             this.templateSrv.replace(target.filter, options.scopedVars || {});
           return this.performLogQuery(target, options).then(response => {
             appEvents.emit('ds-request-response', response);
