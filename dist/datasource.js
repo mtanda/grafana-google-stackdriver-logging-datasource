@@ -217,8 +217,10 @@ System.register(['lodash', 'angular', 'app/core/utils/datemath', 'app/core/utils
                 GoogleStackdriverLoggingDatasource.prototype.testDatasource = function () {
                     var _this = this;
                     return this.initialize().then(function () {
-                        if (_this.access === 'proxy' && _this.defaultProjectId) {
-                            return { status: 'success', message: 'Data source is working', title: 'Success' };
+                        if (_this.defaultProjectId) {
+                            return _this.performLogsQuery({ parent: _this.defaultProjectId }, {}).then(function (response) {
+                                return { status: 'success', message: 'Data source is working', title: 'Success' };
+                            });
                         }
                         else {
                             return { status: 'success', message: 'Data source is working', title: 'Success' };
