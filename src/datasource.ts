@@ -228,8 +228,10 @@ export default class GoogleStackdriverLoggingDatasource {
 
   testDatasource() {
     return this.initialize().then(() => {
-      if (this.access === 'proxy' && this.defaultProjectId) {
-        return { status: 'success', message: 'Data source is working', title: 'Success' };
+      if (this.defaultProjectId) {
+        return this.performLogsQuery({ parent: this.defaultProjectId }, {}).then(response => {
+          return { status: 'success', message: 'Data source is working', title: 'Success' };
+        });
       } else {
         return { status: 'success', message: 'Data source is working', title: 'Success' };
       }
